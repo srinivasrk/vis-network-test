@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <title>Network</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network@latest/dist/vis-network.min.js"></script>
+  <link href="https://unpkg.com/vis-network@latest/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    #mynetwork {
+      width: 1200px;
+      height: 1000px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+  // create an array with nodes
+  var tankNodes = [
+  { x: 181.88500483607442, y: 40, label: '349506', id: '349506'},
+  { x: 191.30512009363656, y: 80, label: '349507', id: '349507'},
+  { x: 216.30841455209406, y: 285, label: '349508', id: '349508' },
+  { x: 210.8374916620889, y: 195.5, label: '349509', id: '349509' },
+  { x: 241.94921145762152, y: 80, label: '349512', id: '349512' },
+  { x: 283.9308326182092, y: 115, label: '349513', id: '349513' },
+  { x: 291.31726865413157, y: 74.5, label: '349515', id: '349515' },
+  { x: 291.32259289659004, y: 74.5, label: '349516', id: '349516' },
+  { x: 291.37430571171876, y: 74.5, label: '349517', id: '349517' },
+  { x: 291.3799573754247, y: 74.5, label: '349518', id: '349518' },
+  { x: 291.3938757631115, y: 74.5, label: '349519', id: '349519' },
+  { x: 291.4613971810937, y: 74.5, label: '349520', id: '349520' },
+  { x: 291.4569852321222, y: 74.5, label: '349521', id: '349521' },
+  { x: 291.48657907347655, y: 74.5, label: '349522', id: '349522' },
+  { x: 291.52450709654545, y: 74.5, label: '349523', id: '349523' },
+  { x: 291.52586220028667, y: 74.5, label: '349524', id: '349524' },
+  { x: 291.5383255448617, y: 74.5, label: '349525', id: '349525' },
+  { x: 291.63173077122764, y: 74.5, label: '349526', id: '349526' },
+  { x: 291.64623618106447, y: 74.5, label: '349527', id: '349527' },
+  { x: 291.70934595029365, y: 74.5, label: '349528', id: '349528' },
+  { x: 295.1230718032093, y: 206.08000000000004, label: '349529', id: '349529' },
+  { x: 323.54472851463214, y: 40.200000000000045, label: '349530', id: '349530' },
+  { x: 327.98446759620106, y: 40, label: '349531', id: '349531' },
+  { x: 347.06158609321704, y: 167, label: '349532', id: '349532' },
+  { x: 368.3077567179879, y: 392, label: '349534', id: '349534' },
+  { x: 369.13751882661785, y: 393, label: '349536', id: '349536' },
+  { x: 375.39616823020907, y: 40, label: '349539', id: '349539' },
+  { x: 390.4488351843071, y: 150, label: '349540', id: '349540' },
+  { x: 407.3581009357511, y: 523.1600000000001, label: '349542', id: '349542' },
+  { x: 407.83083992353966, y: 34, label: '349547', id: '349547' },
+  { x: 408.2562695491404, y: 148, label: '349548', id: '349548' },
+  { x: 414.620725343957, y: 375, label: '349549', id: '349549' },
+  { x: 159.49644230052087, y: 199, label: '511128', id: '511128' },
+  { x: 100, y: 119, label: '511129', id: '511129' },
+  { x: 171.22590834397613, y: 190, label: '511130', id: '511130' },
+  { x: 414.80428317333065, y: 530, label: '511131', id: '511131' },
+  { x: 116.93769681700985, y: 20, label: '511132', id: '511132' },
+  { x: 263.2523156020653, y: 340, label: '511133', id: '511133' },
+  { x: 125.40065726267215, y: 129, label: '511134', id: '511134' },
+  { x: 255.37404535271548, y: 152.5, label: '511135', id: '511135' },
+  { x: 375.91277614533993, y: 50, label: '511136', id: '511136' },
+  { x: 201.84903120835997, y: 120, label: 'GHTANK', id: 'GHTANK' },
+  { x: 200.31768823210996, y: 90, label: 'KEMPER_RD', id: 'KEMPER_RD' }
+  ];
+
+  function draw() {
+  // Create a data table with nodes.
+  nodes = [];
+
+  // Create a data table with links.
+  edges = [];
+
+  // nodes.push({
+  //   id: 3,
+  //   label: "Wireless"
+  // });
+
+  for (var i = 0; i < tankNodes.length; i++) {
+    tankNodes[i]['image'] = 'water-tank.png';
+    tankNodes[i]['shape'] = 'image';
+    nodes.push(tankNodes[i])
+    // edges.push({ from: 3, to: tankNodes[i]['id'], length: 20 });
+  }
+  console.log(nodes);
+  var container = document.getElementById("mynetwork");
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+
+  var options = {
+    interaction:{
+      dragNodes:false,
+      hover: true
+    },
+    physics: {
+      enabled: false, // set this to true to test below options
+      repulsion: {
+        nodeDistance: 1,
+        centralGravity: 10,
+        springLength: 1,
+        springConstant: 10
+      },
+      timestep: 0.02
+    }
+  };
+  network = new vis.Network(container, data, options);
+  network.on('click', function(e) {
+    console.log(e);
+  })
+  }
+
+  window.addEventListener("load", () => {
+    draw();
+  });
+</script>
+</body>
+</html>
