@@ -11,9 +11,14 @@
       height: 1000px;
       border: 1px solid lightgray;
     }
+    #hover {
+      background-color: whitesmoke;
+      border: solid 1px black;
+    }
   </style>
 </head>
 <body>
+<div id="hover"></div>
 <div id="mynetwork"></div>
 <script type="text/javascript">
 
@@ -33,18 +38,24 @@ function draw() {
 
   nodeArr.push({
     id: 1,
+    x: -100,
+    y: -100,
     label: "Main",
     image: DIR + "pump_icon_red.png",
     shape: "image"
   });
   nodeArr.push({
     id: 2,
+    x: -50,
+    y: -200,
     label: "Office",
     image: DIR + "pump_icon_red.png",
     shape: "image"
   });
   nodeArr.push({
     id: 3,
+    x: -200,
+    y: -50,
     label: "Wireless",
     image: DIR + "pump_icon_red.png",
     shape: "image"
@@ -52,18 +63,10 @@ function draw() {
   edgesArr.push({ from: 1, to: 2, length: EDGE_LENGTH_MAIN });
   edgesArr.push({ from: 1, to: 3, length: EDGE_LENGTH_MAIN });
 
-  for (var i = 4; i <= 7; i++) {
-    nodeArr.push({
-      id: i,
-      label: "Computer",
-      image: DIR + "pump_icon_red.png",
-      shape: "image"
-    });
-    edgesArr.push({ from: 2, to: i, length: EDGE_LENGTH_SUB });
-  }
-
   nodeArr.push({
     id: 101,
+    x: 50,
+    y: -200,
     label: "Printer",
     image: DIR + "pump_icon_red.png",
     shape: "image"
@@ -72,6 +75,8 @@ function draw() {
 
   nodeArr.push({
     id: 102,
+    x: -300,
+    y: -100,
     label: "Laptop",
     image: DIR + "pump_icon_red.png",
     shape: "image"
@@ -80,33 +85,32 @@ function draw() {
 
   nodeArr.push({
     id: 103,
-    label: "click to expand",
+    label: "click to toggle",
     type: "cluster",
+    x: 50,
+    y: 50,
     children: [1001, 1002],
-    shape: "square"
+    image: DIR + "pump_station_icon.png",
+    shape: "image"
   });
   edgesArr.push({ from: 1, to: 103, length: EDGE_LENGTH_SUB });
 
   nodeArr.push({
     id: 104,
+    x: -300,
+    y: -300,
     label: "Internet",
     image: DIR + "pump_icon_red.png",
     shape: "image"
   });
   edgesArr.push({ from: 1, to: 104, length: EDGE_LENGTH_SUB });
 
-  for (var i = 200; i <= 201; i++) {
-    nodeArr.push({
-      id: i,
-      label: "Smartphone",
-      image: DIR + "pump_icon_red.png",
-      shape: "image"
-    });
-    edgesArr.push({ from: 3, to: i, length: EDGE_LENGTH_SUB });
-  }
+
 
   nodeArr.push({
     id: 1001,
+    x: 200,
+    y: 100,
     label: "network drive - child-1",
     image: DIR + "pump_icon_red.png",
     hidden: true,
@@ -115,6 +119,8 @@ function draw() {
 
   nodeArr.push({
     id: 1002,
+    x: -100,
+    y: 100,
     label: "network drive - child-2",
     image: DIR + "pump_icon_red.png",
     hidden:true,
@@ -139,14 +145,32 @@ function draw() {
     edges: edges
   };
   var options = {
-    // interaction:{
-    //   dragNodes:false,
-    //   hover: true
-    // }
+    nodes: {
+      fixed:true
+    },
+    interaction: {
+      hover: true
+    }
   };
   network = new vis.Network(container, data, options);
 
 
+  network.on("hoverNode", function(params) {
+    var d = document.getElementById('hover');
+    // show KPI and other node details
+    d.innerHTML = "<h2> Woot woot </h2>"
+    d.style.position = "absolute";
+    d.style.display = "block"
+    // console.log(params.pointer)
+    d.style.left = params.pointer.DOM.x+'px';
+    d.style.top =  params.pointer.DOM.y+'px';
+    d.style.zIndex = 999
+  })
+
+  network.on("blurNode", function(params) {
+    var d = document.getElementById('hover');
+    d.style.display = "none"
+  })
 
   network.on("selectNode", function(params) {
     if (params.nodes.length == 1) {
@@ -158,8 +182,8 @@ function draw() {
         nodes.update([{ id: 1001, hidden: toggle}, { id: 1002, hidden: toggle}]);
         edges.update([{id: '103-1001', hidden: toggle}, {id: '103-1002', hidden: toggle}])
         console.log(toggle);
-        network.fit();
         toggle = !toggle;
+        network.selectEdges([])
       }
     }
   })
