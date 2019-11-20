@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+  <title>Network</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network@latest/dist/vis-network.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <link href="https://unpkg.com/vis-network@latest/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    #mynetwork {
+      width: 1200px;
+      height: 1000px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+
+var nodes = new vis.DataSet();
+var edges = new vis.DataSet();
+var nodeArr = [];
+var edgesArr = [];
+var network = null;
+var toggle = false;
+
+var DIR = "./";
+var EDGE_LENGTH_MAIN = 150;
+var EDGE_LENGTH_SUB = 50;
+
+// Called when the Visualization API is loaded.
+function draw() {
+
+  nodeArr.push({
+    id: 1,
+    label: "Main",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  nodeArr.push({
+    id: 2,
+    label: "Office",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  nodeArr.push({
+    id: 3,
+    label: "Wireless",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  edgesArr.push({ from: 1, to: 2, length: EDGE_LENGTH_MAIN });
+  edgesArr.push({ from: 1, to: 3, length: EDGE_LENGTH_MAIN });
+
+  for (var i = 4; i <= 7; i++) {
+    nodeArr.push({
+      id: i,
+      label: "Computer",
+      image: DIR + "pump_icon_red.png",
+      shape: "image"
+    });
+    edgesArr.push({ from: 2, to: i, length: EDGE_LENGTH_SUB });
+  }
+
+  nodeArr.push({
+    id: 101,
+    label: "Printer",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  edgesArr.push({ from: 2, to: 101, length: EDGE_LENGTH_SUB });
+
+  nodeArr.push({
+    id: 102,
+    label: "Laptop",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  edgesArr.push({ from: 3, to: 102, length: EDGE_LENGTH_SUB });
+
+  nodeArr.push({
+    id: 103,
+    label: "click to expand",
+    type: "cluster",
+    children: [1001, 1002],
+    shape: "square"
+  });
+  edgesArr.push({ from: 1, to: 103, length: EDGE_LENGTH_SUB });
+
+  nodeArr.push({
+    id: 104,
+    label: "Internet",
+    image: DIR + "pump_icon_red.png",
+    shape: "image"
+  });
+  edgesArr.push({ from: 1, to: 104, length: EDGE_LENGTH_SUB });
+
+  for (var i = 200; i <= 201; i++) {
+    nodeArr.push({
+      id: i,
+      label: "Smartphone",
+      image: DIR + "pump_icon_red.png",
+      shape: "image"
+    });
+    edgesArr.push({ from: 3, to: i, length: EDGE_LENGTH_SUB });
+  }
+
+  nodeArr.push({
+    id: 1001,
+    label: "network drive - child-1",
+    image: DIR + "pump_icon_red.png",
+    hidden: true,
+    shape: "image"
+  })
+
+  nodeArr.push({
+    id: 1002,
+    label: "network drive - child-2",
+    image: DIR + "pump_icon_red.png",
+    hidden:true,
+    shape: "image"
+  })
+
+  edgesArr.push({ 
+    id: '103-1001', from: 103, to: 1001, length: EDGE_LENGTH_SUB, hidden: true
+  });
+
+  edgesArr.push({ 
+    id: '103-1002', from: 103, to: 1002, length: EDGE_LENGTH_SUB, hidden: true
+  });
+
+  // create a network
+  var container = document.getElementById("mynetwork");
+  nodes.add(nodeArr)
+  edges.add(edgesArr)
+
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = {
+    // interaction:{
+    //   dragNodes:false,
+    //   hover: true
+    // }
+  };
+  network = new vis.Network(container, data, options);
+
+
+
+  network.on("selectNode", function(params) {
+    if (params.nodes.length == 1) {
+      // a valid node was selected - check if that node is a cluster
+      var nodeId = params.nodes[0];
+      var matchedNode = nodes.get(nodeId)
+      console.log(matchedNode);
+      if (matchedNode.type == "cluster") {
+        nodes.update([{ id: 1001, hidden: toggle}, { id: 1002, hidden: toggle}]);
+        edges.update([{id: '103-1001', hidden: toggle}, {id: '103-1002', hidden: toggle}])
+        console.log(toggle);
+        network.fit();
+        toggle = !toggle;
+      }
+    }
+  })
+}
+
+window.addEventListener("load", () => {
+  draw();
+});
+
+</script>
+</body>
+</html>
